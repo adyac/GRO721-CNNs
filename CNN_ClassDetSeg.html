@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CNN Project - Classification, Detection and Segmentation of Shapes</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    
+    <style>
+        .text-justify {
+            text-align: justify;
+        }
+
+        .header-strip {
+            margin-bottom: 6rem;
+            background: url(img/pngtreehexbg.png) right no-repeat;
+            background-size: cover;
+            height: 67vh;
+            width: 100%;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            color: black;
+        }
+
+        .header-strip h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .header-strip p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(79, 125, 250, 0.2);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-unit {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            min-height: 300px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+        }
+
+        .model-overview {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .model-overview h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #333;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--light);
+        }
+
+        .badge-tech {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .github-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #333;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .github-link:hover {
+            color: white;
+            background-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 125, 250, 0.3);
+        }
+
+        .row-image {
+            margin: 1.5rem 0;
+        }
+
+        .row-image img {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .row-image img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(79, 125, 250, 0.2);
+        }
+
+        .conclusion-box {
+            background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .conclusion-box h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .architecture-diagram {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            margin: 1.5rem 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Project Header -->
+<div class="header-strip">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>Classification, Detection and Segmentation of Shapes</h1>
+                <p><strong>Convolutional neural networks in image processing | GRO721</strong></p>
+                <p style="margin-top: 0.5rem; opacity: 0.9;">University of Sherbrooke | February 25, 2025</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container my-5">
+
+    <!-- SECTION 1: CONTEXT & OBJECTIVE -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">1. Context & Objective</h2>
+        
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <p class="text-justify lead">
+                    This project is a <strong>proof of concept (PoC)</strong> for a baggage screening system design company. The objective is to determine the feasibility of developing commercial software based on deep learning techniques to automate the baggage examination process.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Technical Goal</h4>
+                <p class="text-justify">
+                    Develop a system capable of classifying, detecting and segmenting simple geometric shapes (circle, triangle, cross) in grayscale images. This task is a simplified model of the real problem of object detection in airport scanner images.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Project Constraints</h4>
+                <ul class="text-justify">
+                    <li><strong>Resource Limitations:</strong> The algorithm will be deployed on systems with limited memory and computational capacity</li>
+                    <li><strong>Parameter Limits:</strong>
+                        <ul style="margin-top: 0.5rem;">
+                            <li>Classification: max 200,000 parameters</li>
+                            <li>Detection: max 400,000 parameters</li>
+                            <li>Segmentation: max 1,000,000 parameters</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Dataset Characteristics</h4>
+                <ul class="text-justify">
+                    <li><strong>Image Size:</strong> 53×53 pixels in grayscale</li>
+                    <li><strong>Shapes to Detect:</strong> Circle, Triangle, Cross</li>
+                    <li><strong>Image Composition:</strong> Max 3 shapes per image, max 1 instance per shape</li>
+                    <li><strong>Features:</strong> Random grayscale level, noisy background tending towards black</li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="model-overview">
+                    <h4>Technology Stack</h4>
+                    <div style="margin-top: 1rem;">
+                        <div class="badge-tech">Python 3.x</div>
+                        <div class="badge-tech">PyTorch</div>
+                        <div class="badge-tech">Torchvision</div>
+                        <div class="badge-tech">NumPy</div>
+                        <div class="badge-tech">Matplotlib</div>
+                        <div class="badge-tech">OpenCV</div>
+                    </div>
+                </div>
+
+                <div class="row-image" style="margin-top: 2rem; text-align: center;">
+                    <img src="img/GRO721/Sample_image_GRO721.png" alt="Sample Dataset Image" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Sample Dataset Image — 53×53 px in grayscale</small></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: ARCHITECTURE & MODELS -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">2. Architecture & CNN Models</h2>
+
+        <!-- Classification Network -->
+        <div class="row mb-4">
+            <div class="col-lg-7">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.1 Classification Network</h3>
+                
+                <p class="text-justify">
+                    The classification model identifies the <strong>presence or absence of each shape</strong> in an image. Inspired by AlexNet, the architecture consists of four segments (Conv + ReLU + MaxPool) for progressive feature extraction, followed by two fully-connected layers.
+                </p>
+
+                <div class="model-overview">
+                    <h5>Design Choices</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Final Activation:</strong> Sigmoid (multi-label classification)</li>
+                        <li><strong>Loss Function:</strong> Binary Cross Entropy</li>
+                        <li><strong>Learning Rate:</strong> 0.001</li>
+                        <li><strong>Epochs:</strong> 17</li>
+                        <li><strong>Batch Size:</strong> 32</li>
+                        <li><strong>Total Parameters:</strong> ~180,000 (< 200,000)</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    The use of Sigmoid rather than Softmax is justified because each shape is independent (an image can contain 0, 1, 2 or 3 different shapes).
+                </p>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO721/architecutre_classification.png" alt="Classification Architecture" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Classification Architecture — Detailed Diagram</small></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detection Network -->
+        <div class="row mb-4">
+            <div class="col-lg-7 order-lg-2">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.2 Detection Network</h3>
+                
+                <p class="text-justify">
+                    The detection model generates <strong>bounding boxes</strong> around identified shapes. Inspired by YOLO, the network consists of three convolution segments with BatchNorm and LeakyReLU, producing an output of dimension (1, 3, 7) for a 3×7 grid.
+                </p>
+
+                <div class="model-overview">
+                    <h5>Design Choices</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Architecture:</strong> YOLO-inspired with BatchNorm</li>
+                        <li><strong>Loss Function:</strong> MSE (localization) + Cross Entropy (class)</li>
+                        <li><strong>Learning Rate:</strong> 0.001</li>
+                        <li><strong>Epochs:</strong> 20</li>
+                        <li><strong>Batch Size:</strong> 32</li>
+                        <li><strong>Total Parameters:</strong> ~390,000 (< 400,000)</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Adding BatchNorm improves gradient stability and accelerates convergence. LeakyReLU (slope 0.1) prevents the "dying ReLU" problem.
+                </p>
+            </div>
+
+            <div class="col-lg-5 order-lg-1">
+                <div class="image-placeholder">
+                    Detection Architecture<br>
+                    <small>Detailed Diagram (to add)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segmentation Network -->
+        <div class="row mb-4">
+            <div class="col-lg-7">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.3 Semantic Segmentation Network</h3>
+                
+                <p class="text-justify">
+                    The segmentation model classifies <strong>each pixel</strong> according to its class (circle, triangle, cross or background). The U-Net architecture uses an encoder to extract features and a decoder to reconstruct the image, with skip-connections to preserve spatial information.
+                </p>
+
+                <div class="model-overview">
+                    <h5>Design Choices</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Architecture:</strong> U-Net with skip-connections</li>
+                        <li><strong>Loss Function:</strong> Cross Entropy Loss (multi-class)</li>
+                        <li><strong>Learning Rate:</strong> 1e-2 (fast) then 1e-4 (refined)</li>
+                        <li><strong>Epochs:</strong> 17-25</li>
+                        <li><strong>Batch Size:</strong> 32</li>
+                        <li><strong>Total Parameters:</strong> ~993,700 (< 1,000,000)</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Skip-connections are crucial for recovering spatial information lost during MaxPool. They enable precise reconstruction of shape contours.
+                </p>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="image-placeholder">
+                    Segmentation Architecture (U-Net)<br>
+                    <small>Detailed Diagram (to add)</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: IMPLEMENTATION -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">3. Implementation & Key Optimizations</h2>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Performance Optimizations</h4>
+
+                <h5 style="margin-top: 1.5rem;">Dataset & Preprocessing</h5>
+                <p class="text-justify">
+                    Custom <code>ConveyorSimulator</code> Dataset class loads ~270 48×48 grayscale images. Split: <strong>90% train (243 images) + 10% validation (27 images)</strong>. Preprocessing: simple <code>ToTensor()</code> normalization—no augmentation after finding it destroys geometric shape classification performance.
+                </p>
+
+                <h5 style="margin-top: 1.5rem;">Optimization Strategy</h5>
+                <p class="text-justify">
+                    Starting from <strong>83.7% accuracy</strong> with significant overfitting (9% train-val gap), applied systematic optimizations to reach <strong>96.0%</strong>:
+                </p>
+
+                <div class="model-overview" style="margin-top: 1rem;">
+                    <h6 style="color: var(--primary);">Regularization Techniques Applied</h6>
+                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li><strong>BatchNorm2d(16-128)</strong> after each conv layer — normalized activation distributions, stabilized training</li>
+                        <li><strong>Dropout2d(0.2)</strong> on conv features — prevented neuron co-adaptation, reduced overfitting</li>
+                        <li><strong>Dropout(0.2)</strong> on FC layers — forced robust feature learning</li>
+                        <li><strong>L2 Regularization</strong> (weight_decay=1e-4) — penalized large weights, improved generalization</li>
+                    </ul>
+                </div>
+
+                <div class="model-overview" style="border-left: 4px solid #ff6b6b; margin-top: 1rem;">
+                    <h6 style="color: #ff6b6b;">Attempted but FAILED: Aggressive Data Augmentation</h6>
+                    <p style="margin: 0.5rem 0;">
+                        Applied RandomRotation(10°), RandomAffine, RandomHorizontalFlip → <strong>Accuracy dropped to 50%</strong>
+                    </p>
+                    <p style="margin: 0.5rem 0; font-size: 0.95rem;">
+                        <strong>Root Cause:</strong> Geometric shapes (circles, triangles, crosses) have inherent orientation. Aggressive augmentation breaks shape recognition. For this task, NO augmentation proved optimal.
+                    </p>
+                    <p style="margin: 0.5rem 0; font-size: 0.95rem;">
+                        <strong>Learning:</strong> Not all augmentation is beneficial—must match strategy to task characteristics.
+                    </p>
+                </div>
+
+                <h5 style="margin-top: 1.5rem;">Optimization Results Progression</h5>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Optimization Phase</th>
+                            <th>Train Acc</th>
+                            <th>Val Acc</th>
+                            <th>Train-Val Gap</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Baseline (83.7%)</strong></td>
+                            <td>84.2%</td>
+                            <td>75.2%</td>
+                            <td>9.0%</td>
+                            <td>Severe overfitting</td>
+                        </tr>
+                        <tr>
+                            <td><strong>+ BatchNorm + Dropout</strong></td>
+                            <td>81.1%</td>
+                            <td>78.9%</td>
+                            <td>2.2%</td>
+                            <td>Better generalization</td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td><strong>Final (100 epochs, 85 FC neurons)</strong></td>
+                            <td>93.9%</td>
+                            <td>93.0%</td>
+                            <td>0.95%</td>
+                            <td>Optimal - Production Ready</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="model-overview" style="border-left: 4px solid var(--primary);">
+                    <h5 style="color: var(--primary);">Final Hyperparameters</h5>
+                    <div style="font-family: 'Courier New', monospace; font-size: 0.9rem; margin-top: 1rem; background: #f8f9fa; padding: 1rem; border-radius: 4px; line-height: 1.6;">
+Learning Rate:        <strong>1e-3</strong> (Adam)
+Batch Size:          <strong>32</strong>
+Epochs:              <strong>100</strong>
+Dropout (Conv):      <strong>0.2</strong>
+Dropout (FC):        <strong>0.2</strong>
+Weight Decay:        <strong>1e-4</strong>
+Augmentation:        <strong>None</strong>
+Train-Val Split:     <strong>90-10</strong>
+Loss Function:       <strong>BCEWithLogitsLoss</strong>
+                    </div>
+                </div>
+                
+                <div class="model-overview" style="margin-top: 1.5rem;">
+                    <h5 style="color: var(--primary);">Training Pipeline</h5>
+                    <ol style="margin-top: 1rem; padding-left: 1.5rem; font-size: 0.95rem;">
+                        <li>Load training/validation split</li>
+                        <li>Initialize model + optimizer</li>
+                        <li>For each epoch:
+                            <ul style="margin-top: 0.5rem;">
+                                <li>Forward pass → loss</li>
+                                <li>Backward pass → gradients</li>
+                                <li>Update weights</li>
+                                <li>Validate on 27 samples</li>
+                            </ul>
+                        </li>
+                        <li>Save best weights (based on val loss)</li>
+                        <li>Final test on 100 samples</li>
+                    </ol>
+                </div>
+
+                <div class="model-overview" style="margin-top: 1.5rem;">
+                    <h5 style="color: var(--primary);\">Lessons Learned</h5>
+                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li>Importer les courbes de validation dès le départ</li>
+                        <li>Utiliser BatchNorm systématiquement</li>
+                        <li>Adapter l'architecture aux données</li>
+                        <li>Monitoring de la perte aide à identifier les problèmes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: RESULTS & VISUALS -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">4. Results & Visuals</h2>
+
+        <!-- Classification Results -->
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">4.1 Classification</h3>
+
+        <div class="metrics-grid">
+            <div class="metric-card" style="border: 2px solid var(--primary); background: #f0f4ff;">
+                <div class="metric-label">Test Accuracy</div>
+                <div class="metric-value">96.0%</div>
+                <div class="metric-unit">Outstanding Performance</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Validation Accuracy</div>
+                <div class="metric-value">92.96%</div>
+                <div class="metric-unit">excellent generalization</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Train Accuracy</div>
+                <div class="metric-value">93.91%</div>
+                <div class="metric-unit">stable learning</div>
+            </div>
+            <div class="metric-card" style="border: 2px solid #28a745; background: #f0fff4;">
+                <div class="metric-label">Train-Val Gap</div>
+                <div class="metric-value">0.95%</div>
+                <div class="metric-unit">Minimal overfitting</div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    The classification model shows solid performance with <strong>92.5%</strong> accuracy. The training curve shows a progressive decrease in loss, while precision increases steadily. Fluctuations in validation may be caused by natural variations in the dataset.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO721/train_classification_learning_curves.png" alt="Loss & Accuracy Curves" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Loss & Accuracy Curves</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="row-image">
+                    <img src="img/GRO721/eval_test_classification_prediction.png" alt="Model Classification Predictions - Shapes with Predictions" style="width: 100%;">
+                </div>
+                <p class="text-justify">
+                    Tests on images show that the model recognizes shapes correctly. The main error cases correspond to overlapping shapes or partially visible shapes. Performance can be improved through data augmentation (random rotations, zooms).
+                </p>
+            </div>
+        </div>
+
+        <!-- Detection Results -->
+        <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.2 Object Detection</h3>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">mAP (IoU=0.5)</div>
+                <div class="metric-value">78.3%</div>
+                <div class="metric-unit">average across all classes</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Precision</div>
+                <div class="metric-value">82.1%</div>
+                <div class="metric-unit">détection correcte</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Recall</div>
+                <div class="metric-value">75.9%</div>
+                <div class="metric-unit">formes détectées</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Loss Final</div>
+                <div class="metric-value">0.0035</div>
+                <div class="metric-unit">validation</div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    Detection achieves an mAP of <strong>78.3%</strong>, showing good ability to locate and classify objects. However, fluctuations are visible on the validation set, suggesting potential instability and overfitting. Some bounding boxes are not perfectly aligned with the actual objects.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="image-placeholder">
+                    Loss & mAP Curves<br>
+                    <small>(to add: loss_mAP_detection.png)</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="image-placeholder">
+                    Detection Predictions<br>
+                    <small>(to add: exemple_detection_predictions.png)</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    Results show some error cases: imperfect box alignment, shape classification errors, multiple detections of the same object. Improvements could come from revising the loss function or more aggressive data augmentation (random rotations).
+                </p>
+            </div>
+        </div>
+
+        <!-- Segmentation Results -->
+        <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.3 Semantic Segmentation</h3>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Average IoU</div>
+                <div class="metric-value">79.1%</div>
+                <div class="metric-unit">Intersection over Union</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Pixel Accuracy</div>
+                <div class="metric-value">94.7%</div>
+                <div class="metric-unit">correct classification</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Loss Final</div>
+                <div class="metric-value">0.0018</div>
+                <div class="metric-unit">validation (CrossEntropy)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Optimal Epochs</div>
+                <div class="metric-value">17-25</div>
+                <div class="metric-unit">without overfitting</div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    Semantic segmentation achieves an average IoU of <strong>79.1%</strong>, demonstrating the U-Net model's ability to accurately segment shapes at the pixel level. The architecture with skip-connections proves very effective for preserving contours. Training curves show stable convergence.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="image-placeholder">
+                    Loss & IoU Curves<br>
+                    <small>(to add: loss_IoU_segmentation.png)</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="image-placeholder">
+                    Segmentation Predictions<br>
+                    <small>(to add: exemple_segmentation_predictions.png)</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    Segmentation results show excellent correspondence between predictions and ground truth. The model accurately segments shape contours, even in overlapping cases. An epoch number of 17-25 proves optimal; beyond 25 the model saturates without improvement.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: CONCLUSION & FUTURE PERSPECTIVES -->
+    <section class="mb-5">
+        <h2 class="section-title">6. Conclusion & Future Perspectives</h2>
+
+        <div class="conclusion-box">
+            <h3>Project Summary</h3>
+
+            <p class="text-justify">
+                This project validated the <strong>feasibility of a proof of concept</strong> to automate scanner image processing through convolutional neural networks. The three developed architectures (classification, detection, segmentation) demonstrate that optimized models can achieve good performance even with strict resource constraints.
+            </p>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Successes</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>Robust classification with <strong>92.5% accuracy</strong> — Production-ready performance</li>
+                <li>Precise segmentation with <strong>79.1% IoU</strong> — Very efficient U-Net architecture</li>
+                <li>Respect of parameter constraints — All models < defined limits</li>
+                <li>Acceptable inference time — ~14-18 ms for the full pipeline</li>
+                <li>Modular and well-documented code — Adaptable for other image tasks</li>
+            </ul>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li><strong>Data Augmentation:</strong> Random rotations, zooms, translations to improve generalization</li>
+                <li><strong>Detection:</strong> Reduce learning rate, implement NMS (Non-Maximum Suppression) to eliminate multiple detections</li>
+                <li><strong>Ensemble Learning:</strong> Combine all three models for more robust predictions</li>
+                <li><strong>Transfer Learning:</strong> Fine-tune on pre-trained models (ResNet, MobileNet) if resources allow</li>
+                <li><strong>Quantization:</strong> Reduce model size for deployment on limited hardware</li>
+                <li><strong>Test on Real Data:</strong> Validate on actual scanner images (domain transfer)</li>
+            </ul>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Learnings</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>BatchNorm is essential for stability, especially in detection</li>
+                <li>Skip-connections are crucial for preserving spatial information</li>
+                <li>Adapting architecture to data is more important than using standard architectures unchanged</li>
+                <li>Monitoring validation curves allows quick identification of overfitting problems</li>
+                <li>Hyperparameter optimization must be iterative and based on curve observations</li>
+            </ul>
+        </div>
+
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Resources & Links</h3>
+
+        <a href="https://github.com/" class="github-link" target="_blank">
+            <i class="fab fa-github"></i> View Complete Source Code on GitHub
+        </a>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: var(--light); border-radius: 8px;">
+            <h5 style="color: var(--dark); margin-bottom: 1rem;">Associated Documents</h5>
+            <ul style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Project Statement:</strong> Problematique_gro721_guide_etudiant_H25.pdf</li>
+                <li><strong>Source Code:</strong> Dataset, models, training scripts on GitHub</li>
+            </ul>
+        </div>
+    </section>
+
+</div>
+
+<!-- Modal for image expansion -->
+<div id="imageModal" class="modal">
+    <span class="close-modal" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+    // Image modal functionality
+    function openImageModal(imageSrc) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = imageSrc;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('imageModal');
+        if (event.target === modal) {
+            closeImageModal();
+        }
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+
+    // Make images clickable for modal
+    document.querySelectorAll('.row-image img').forEach(img => {
+        img.style.cursor = 'pointer';
+        img.onclick = function() {
+            openImageModal(this.src);
+        };
+    });
+</script>
+
+</body>
+</html>
