@@ -1,5 +1,6 @@
 #! usr/bin/python3
 import argparse
+import json
 import os
 
 import numpy as np
@@ -42,6 +43,7 @@ class ConveyorCnnTrainer():
         self._train_data_path = os.path.join(self._dir_path, 'data', 'training')
         self._test_data_path = os.path.join(self._dir_path, 'data', 'test')
         self._weights_path = os.path.join(self._dir_path, 'weights', 'task_' + self._args.task + '_best.pt')
+        self._history_path = os.path.join(self._dir_path, 'weights', 'task_' + self._args.task + '_history.json')
 
         # Initialisation du model et des classes pour l'entraînement
         self._model = self._create_model(self._args.task).to(self._device)
@@ -121,6 +123,19 @@ class ConveyorCnnTrainer():
         epochs_validation_metrics = []
         best_validation = 0
         nb_worse_validation = 0
+
+        if self._args.use_weights and os.path.exists(self._weights_path):
+            print(f'Resuming from {self._weights_path}')
+            self._model.load_state_dict(torch.load(self._weights_path, map_location=self._device))
+            if os.path.exists(self._history_path):
+                with open(self._history_path) as f:
+                    history = json.load(f)
+                epochs_train_losses = history['train_losses']
+                epochs_validation_losses = history['val_losses']
+                epochs_train_metrics = history['train_metrics']
+                epochs_validation_metrics = history['val_metrics']
+                best_validation = max(epochs_validation_metrics)
+                print(f'Resuming history from epoch {len(epochs_train_losses)} (best val metric: {best_validation:.4f})')
 
         params_train = {'batch_size': self._args.batch_size, 'shuffle': True, 'num_workers': 4}
         params_validation = {'batch_size': self._args.batch_size, 'shuffle': False, 'num_workers': 4}
@@ -206,6 +221,13 @@ class ConveyorCnnTrainer():
             visualizer.show_learning_curves(epochs_train_losses, epochs_validation_losses,
                                             epochs_train_metrics, epochs_validation_metrics,
                                             train_metric.get_name())
+            with open(self._history_path, 'w') as f:
+                json.dump({
+                    'train_losses': epochs_train_losses,
+                    'val_losses': epochs_validation_losses,
+                    'train_metrics': epochs_train_metrics,
+                    'val_metrics': epochs_validation_metrics,
+                }, f)
 
         ans = input('Do you want ot test? (y/n):')
         if ans == 'y':
@@ -394,6 +416,8 @@ if __name__ == '__main__':
     parser.add_argument('--use_gpu', action='store_true', help='use the gpu instead of the cpu')
     parser.add_argument('--early_stop', type=int, default=25,
                         help='number of worse validation loss before quitting training (default: 25)')
+    parser.add_argument('--use_weights', action='store_true',
+                        help='resume training from existing saved weights and history')
 
     args = parser.parse_args()
 

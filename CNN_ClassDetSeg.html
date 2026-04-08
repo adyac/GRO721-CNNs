@@ -448,9 +448,9 @@
             </div>
 
             <div class="col-lg-5">
-                <div class="image-placeholder">
-                    Segmentation Architecture (U-Net)<br>
-                    <small>Detailed Diagram (to add)</small>
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO721/architecture_UNet_segmentation.png" alt="U-Net Segmentation Architecture" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>U-Net Segmentation Architecture — Detailed Diagram</small></p>
                 </div>
             </div>
         </div>
@@ -570,7 +570,7 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
                 </div>
 
                 <div class="model-overview" style="margin-top: 1.5rem;">
-                    <h5 style="color: var(--primary);\">Lessons Learned</h5>
+                    <h5 style="color: var(--primary);">Lessons Learned</h5>
                     <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
                         <li>Importer les courbes de validation dès le départ</li>
                         <li>Utiliser BatchNorm systématiquement</li>
@@ -695,52 +695,52 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
         <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.3 Semantic Segmentation</h3>
 
         <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">Average IoU</div>
-                <div class="metric-value">79.1%</div>
+            <div class="metric-card" style="border: 2px solid var(--primary); background: #f0f4ff;">
+                <div class="metric-label">Best Val IoU</div>
+                <div class="metric-value">86.0%</div>
                 <div class="metric-unit">Intersection over Union</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Pixel Accuracy</div>
-                <div class="metric-value">94.7%</div>
-                <div class="metric-unit">correct classification</div>
+                <div class="metric-label">Train IoU (final)</div>
+                <div class="metric-value">96.2%</div>
+                <div class="metric-unit">last epoch</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Loss Final</div>
-                <div class="metric-value">0.0018</div>
-                <div class="metric-unit">validation (CrossEntropy)</div>
+                <div class="metric-label">Val Loss (final)</div>
+                <div class="metric-value">0.00114</div>
+                <div class="metric-unit">CrossEntropy</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Optimal Epochs</div>
-                <div class="metric-value">17-25</div>
-                <div class="metric-unit">without overfitting</div>
+                <div class="metric-label">Epochs Trained</div>
+                <div class="metric-value">150</div>
+                <div class="metric-unit">best at ~ep. 142</div>
             </div>
         </div>
 
         <div class="row mt-4">
             <div class="col-lg-6">
                 <p class="text-justify">
-                    Semantic segmentation achieves an average IoU of <strong>79.1%</strong>, demonstrating the U-Net model's ability to accurately segment shapes at the pixel level. The architecture with skip-connections proves very effective for preserving contours. Training curves show stable convergence.
+                    Semantic segmentation achieves a best validation IoU of <strong>86.0%</strong> (epoch ~142), demonstrating the U-Net model's ability to accurately segment shapes at the pixel level. The final train IoU of <strong>96.2%</strong> yields a train-val gap of ~10%, indicating moderate overfitting that stabilized after epoch 80. The architecture with skip-connections proves very effective for preserving contours.
+                </p>
+                <p class="text-justify">
+                    Training ran for <strong>150 epochs</strong>, with the model converging steadily from epoch 1 (IoU ~27%) to plateau around epoch 80–100 (IoU ~84–85%). Beyond epoch 100, improvements are marginal. The final validation loss of <strong>0.00114</strong> reflects stable and well-fitted training.
                 </p>
             </div>
             <div class="col-lg-6">
-                <div class="image-placeholder">
-                    Loss & IoU Curves<br>
-                    <small>(to add: loss_IoU_segmentation.png)</small>
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO721/train_segmentation_learning_curves.png" alt="Segmentation Loss and IoU Curves" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Loss & IoU Curves</small></p>
                 </div>
             </div>
         </div>
 
         <div class="row mt-4">
-            <div class="col-lg-6">
-                <div class="image-placeholder">
-                    Segmentation Predictions<br>
-                    <small>(to add: exemple_segmentation_predictions.png)</small>
+            <div class="col-lg-12">
+                <div class="row-image">
+                    <img src="img/GRO721/eval_test_segmentation_prediction.png" alt="Segmentation Predictions" style="width: 100%;">
                 </div>
-            </div>
-            <div class="col-lg-6">
                 <p class="text-justify">
-                    Segmentation results show excellent correspondence between predictions and ground truth. The model accurately segments shape contours, even in overlapping cases. An epoch number of 17-25 proves optimal; beyond 25 the model saturates without improvement.
+                    Tests on segmentation show that the model accurately delineates shape boundaries and generates precise pixel-level masks. The main error cases correspond to overlapping shapes where boundaries become ambiguous, and partially visible shapes at image edges. Performance can be improved through data augmentation (random rotations, zooms, and edge variations) to handle more diverse segmentation scenarios.
                 </p>
             </div>
         </div>
@@ -760,7 +760,7 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Successes</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
                 <li>Robust classification with <strong>92.5% accuracy</strong> — Production-ready performance</li>
-                <li>Precise segmentation with <strong>79.1% IoU</strong> — Very efficient U-Net architecture</li>
+                <li>Precise segmentation with <strong>86.0% IoU</strong> — Very efficient U-Net with skip-connections</li>
                 <li>Respect of parameter constraints — All models < defined limits</li>
                 <li>Acceptable inference time — ~14-18 ms for the full pipeline</li>
                 <li>Modular and well-documented code — Adaptable for other image tasks</li>
@@ -788,7 +788,7 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
 
         <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Resources & Links</h3>
 
-        <a href="https://github.com/" class="github-link" target="_blank">
+        <a href="https://github.com/adyac/GRO721-CNNs" class="github-link" target="_blank">
             <i class="fab fa-github"></i> View Complete Source Code on GitHub
         </a>
 
